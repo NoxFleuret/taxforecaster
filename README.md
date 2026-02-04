@@ -10,7 +10,9 @@
 
 ## 💻 Demo
 
-**TaxForecaster** demo is availabe here https://taxforecaster.streamlit.app/
+**TaxForecaster** demo is availabe here: https://taxforecaster.streamlit.app/
+
+You can use sample data here for demo https://github.com/NoxFleuret/taxforecaster/blob/main/tax_history.csv
 
 ## 📖 Overview
 
@@ -156,6 +158,7 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 ---
 
 *Developed by Fasya_Dev for fiscal policy modernization initiatives.*
+
 
 
 
