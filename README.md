@@ -8,6 +8,10 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-ff4b4b.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
+## 💻 Demo
+
+**TaxForecaster** demo is availabe here https://taxforecaster.streamlit.app/
+
 ## 📖 Overview
 
 **TaxForecaster** is a predictive analytics platform designed to assist fiscal policy analysts and decision-makers in collecting, forecasting, and analyzing tax revenue data.
@@ -152,6 +156,7 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 ---
 
 *Developed by Fasya_Dev for fiscal policy modernization initiatives.*
+
 
 
 
