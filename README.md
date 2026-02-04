@@ -1,4 +1,4 @@
-# 🏛️ TaxForecaster 2.0
+# 🏛️ TaxForecaster
 
 > **Tax Revenue Forecasting & Scenario Planning System**
 > *Advanced Analytics, Multi-Model Machine Learning, and AI-Driven Insights.*
@@ -151,3 +151,4 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 ---
 
 *Developed by Fasya_Dev for fiscal policy modernization initiatives.*
+
