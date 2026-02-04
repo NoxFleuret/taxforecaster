@@ -50,7 +50,7 @@ By combining traditional econometric models (SARIMA, Holt-Winters) with modern m
 1.  **Clone the repository**
     ```powershell
     git clone https://github.com/NoxFleuret/taxforecaster.git
-    cd tax-forecaster
+    cd taxforecaster
     ```
 
 2.  **Install dependencies**
@@ -151,4 +151,5 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 ---
 
 *Developed by Fasya_Dev for fiscal policy modernization initiatives.*
+
 
