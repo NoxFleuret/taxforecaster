@@ -10,7 +10,7 @@
 
 ## 📖 Overview
 
-**TaxForecaster 2.0** is a predictive analytics platform designed to assist fiscal policy analysts and decision-makers in collecting, forecasting, and analyzing tax revenue data.
+**TaxForecaster** is a predictive analytics platform designed to assist fiscal policy analysts and decision-makers in collecting, forecasting, and analyzing tax revenue data.
 
 By combining traditional econometric models (SARIMA, Holt-Winters) with modern machine learning (XGBoost, LightGBM, CatBoost, Prophet), the system provides robust revenue projections under various economic scenarios.
 
@@ -152,6 +152,7 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 ---
 
 *Developed by Fasya_Dev for fiscal policy modernization initiatives.*
+
 
 
 
