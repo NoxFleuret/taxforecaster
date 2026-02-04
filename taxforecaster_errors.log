@@ -1,0 +1,18 @@
+2026-02-04 16:48:14,943 - TaxForecaster - INFO - Operation succeeded: load_data
+2026-02-04 16:48:18,682 - TaxForecaster - INFO - Operation succeeded: load_data
+2026-02-04 16:48:22,264 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:22,265 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:48:22,701 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:22,701 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:48:40,894 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:40,894 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:48:41,298 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:41,298 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:48:53,720 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:53,721 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:48:54,098 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:48:54,098 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:49:07,453 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:49:07,453 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.
+2026-02-04 16:49:07,749 - prophet - INFO - Disabling weekly seasonality. Run prophet with weekly_seasonality=True to override this.
+2026-02-04 16:49:07,749 - prophet - INFO - Disabling daily seasonality. Run prophet with daily_seasonality=True to override this.

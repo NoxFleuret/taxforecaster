@@ -1,0 +1,21 @@
+pandas>=1.3.0
+numpy>=1.21.0
+statsmodels>=0.13.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+scikit-learn>=1.0.0
+prophet>=1.1.0
+xgboost>=1.5.0
+holidays>=0.13
+lightgbm>=3.3.0
+optuna>=3.0.0
+streamlit>=1.32.0
+plotly>=5.0.0
+yfinance>=0.2.0
+requests>=2.25.0
+joblib>=1.1.0
+shap>=0.40.0
+openpyxl>=3.0.0
+catboost>=1.0.0
+# tensorflow  <-- Optional for LSTM
+# keras       <-- Optional for LSTM

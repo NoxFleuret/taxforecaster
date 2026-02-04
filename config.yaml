@@ -1,0 +1,273 @@
+# TaxForecaster Configuration File
+# All configurable parameters for the application
+
+# =============================================================================
+# Application Settings
+# =============================================================================
+app:
+  name: "TaxForecaster 2.0"
+  version: "2.0.0"
+  environment: "production"  # development, staging, production
+  debug: false
+
+# =============================================================================
+# Data Settings
+# =============================================================================
+data:
+  # File paths
+  default_history_file: "tax_history.csv"
+  default_macro_file: "macro_data_auto.csv"
+  sample_history_file: "sample_tax_history.csv"
+  sample_macro_file: "sample_macro_data.csv"
+  
+  # Data validation
+  required_columns:
+    history:
+      - "Tanggal"
+      - "Jenis Pajak"
+      - "Nominal (Milyar)"
+    macro:
+      - "Tanggal"
+  
+  # Minimum data requirements
+  min_rows: 12
+  min_months: 24  # Recommended minimum for forecasting
+  
+  # Date format
+  date_format: "%d/%m/%Y"  # DD/MM/YYYY
+  
+  # Data quality thresholds
+  freshness_threshold_hours:
+    fresh: 24       # Green indicator
+    moderate: 168   # Yellow indicator (1 week)
+    # Above moderate = stale (red)
+
+# =============================================================================
+# Model Settings
+# =============================================================================
+models:
+  # Available models
+  enabled_models:
+    - "XGBoost"
+    - "LightGBM"
+    - "Prophet"
+    - "SARIMA"
+    - "SARIMAX"
+    - "Holt-Winters"
+    - "Random Forest"
+    - "Gradient Boosting"
+    - "Extra Trees"
+    - "Ridge"
+    - "ElasticNet"
+    - "Neural Network (MLP)"
+    - "LSTM (Deep Learning)"
+  
+  # Default hyperparameters
+  hyperparameters:
+    xgboost:
+      n_estimators: 100
+      max_depth: 6
+      learning_rate: 0.1
+      random_state: 42
+    
+    lightgbm:
+      n_estimators: 100
+      num_leaves: 31
+      learning_rate: 0.1
+      verbose: -1
+      random_state: 42
+    
+    random_forest:
+      n_estimators: 100
+      max_depth: 10
+      random_state: 42
+    
+    mlp:
+      hidden_layer_sizes: [100]
+      max_iter: 500
+      random_state: 42
+  
+  # Training settings
+  training:
+    default_n_trials: 10      # Optuna hyperparameter trials
+    default_epochs: 100        # For neural networks
+    timeout_seconds: 120       # Per trial timeout
+    
+  # Feature engineering
+  features:
+    lag_periods: 3              # Number of lag features
+    rolling_window: 3           # Rolling mean window
+    holiday_features: true       # Include Indonesian holidays
+    seasonal_periods: 12         # Seasonality period (months)
+  
+  # Outlier detection
+  outliers:
+    z_score_threshold: 2.5
+    method: "z_score"  # z_score, iqr, isolation_forest
+
+# =============================================================================
+# Forecasting Settings
+# =============================================================================
+forecast:
+  # Default settings
+  default_periods: 12
+  min_periods: 6
+  max_periods: 24
+  
+  # Confidence intervals
+  confidence_level: 0.95
+  
+  # Model selection strategies
+  strategies:
+    - "auto"              # Best accuracy
+    - "ensemble"          # Top 3 ensemble
+    - "custom"            # User selection
+
+# =============================================================================
+# Performance & Caching
+# =============================================================================
+performance:
+  # Memory management
+  memory:
+    max_usage_mb: 500
+    alert_threshold_mb: 100
+    cleanup_on_threshold: true
+  
+  # Caching
+  cache:
+    enabled: true
+    ttl_seconds: 3600  # 1 hour
+    max_size_mb: 200
+
+# =============================================================================
+# UI Settings
+# =============================================================================
+ui:
+  # Theme colors
+  colors:
+    primary: "#3B82F6"         # Electric Blue
+    secondary: "#8B5CF6"       # Purple
+    success: "#10B981"         # Emerald
+    danger: "#EF4444"          # Red
+    warning: "#F59E0B"         # Amber
+    text_primary: "#F1F5F9"    # Titanium White
+    text_secondary: "#94A3B8"  # Muted Steel
+  
+  # Page configuration
+  page_title: "TaxForecaster | Enterprise AI"
+  page_icon: "🏛️"
+  layout: "wide"
+  
+  # Chart settings
+  charts:
+    default_height: 450
+    color_palette:
+      - "#3B82F6"  # Blue
+      - "#10B981"  # Emerald
+      - "#F59E0B"  # Amber
+      - "#8B5CF6"  # Violet
+      - "#EC4899"  # Pink
+      - "#6366F1"  # Indigo
+      - "#14B8A6"  # Teal
+
+# =============================================================================
+# Logging Settings
+# =============================================================================
+logging:
+  # Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  
+  # Log file settings
+  file:
+    enabled: true
+    path: "logs/taxforecaster.log"
+    max_bytes: 10485760  # 10 MB
+    backup_count: 5
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Console logging
+  console:
+    enabled: true
+    level: "INFO"
+  
+  # Component-specific logging
+  components:
+    forecaster: "INFO"
+    data_loader: "INFO"
+    model_training: "INFO"
+    api: "WARNING"
+
+# =============================================================================
+# API Settings (for external data fetching)
+# =============================================================================
+api:
+  # Timeouts
+  timeout_seconds: 30
+  retry_attempts: 3
+  retry_delay_seconds: 2
+  
+  # Rate limiting
+  rate_limit:
+    max_requests_per_hour: 100
+    
+  # External data sources
+  sources:
+    yahoo_finance:
+      enabled: true
+    world_bank:
+      enabled: true
+
+# =============================================================================
+# Export Settings
+# =============================================================================
+export:
+  # Supported formats
+  formats:
+    - "csv"
+    - "excel"
+    - "html"
+    - "pdf"
+  
+  # Default export settings
+  excel:
+    include_charts: true
+    sheet_names:
+      forecast: "Forecast"
+      historical: "Historical Data"
+      metrics: "Model Performance"
+      scenarios: "Scenario Parameters"
+  
+  html:
+    include_interactive_charts: true
+    template: "default"
+
+# =============================================================================
+# Scenarios (Preset Economic Conditions)
+# =============================================================================
+scenarios:
+  baseline:
+    name: "Baseline (Current Trends)"
+    description: "Continuation of current economic trends"
+    parameters:
+      Inflasi: 3.0
+      Pertumbuhan_Ekonomi: 5.0
+      Kurs_USD: 15000.0
+      Harga_Minyak_ICP: 80.0
+  
+  optimistic:
+    name: "Optimistic (Economic Boom)"
+    description: "Strong economic growth scenario"
+    parameters:
+      Inflasi: 2.5
+      Pertumbuhan_Ekonomi: 6.5
+      Kurs_USD: 14000.0
+      Harga_Minyak_ICP: 100.0
+  
+  pessimistic:
+    name: "Pessimistic (Economic Crisis)"
+    description: "Economic downturn scenario"
+    parameters:
+      Inflasi: 5.0
+      Pertumbuhan_Ekonomi: 3.0
+      Kurs_USD: 17000.0
+      Harga_Minyak_ICP: 60.0

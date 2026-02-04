@@ -1,0 +1,86 @@
+# Preset Scenario Templates for TaxForecaster 2.0
+
+## Economic Crisis Scenario
+Inflasi: 8.5
+Pertumbuhan_Ekonomi: 2.0
+Kurs_USD: 17500.0
+Harga_Minyak_ICP: 45.0
+SBN_10Y: 8.5
+Lifting_Minyak: 550.0
+Lifting_Gas: 950.0
+IHSG: 5500.0
+BI_Rate: 7.5
+Harga_Batubara: 90.0
+Harga_CPO: 650.0
+Ekspor_Growth: -2.0
+Impor_Growth: -3.0
+Konsumsi_RT_Growth: 2.5
+PMI_Manufaktur: 45.0
+
+## Optimistic Growth Scenario
+Inflasi: 2.5
+Pertumbuhan_Ekonomi: 6.5
+Kurs_USD: 14000.0
+Harga_Minyak_ICP: 95.0
+SBN_10Y: 6.0
+Lifting_Minyak: 650.0
+Lifting_Gas: 1100.0
+IHSG: 8500.0
+BI_Rate: 5.5
+Harga_Batubara: 180.0
+Harga_CPO: 950.0
+Ekspor_Growth: 8.0
+Impor_Growth: 7.0
+Konsumsi_RT_Growth: 6.0
+PMI_Manufaktur: 55.0
+
+## Commodity Boom Scenario
+Inflasi: 4.5
+Pertumbuhan_Ekonomi: 5.8
+Kurs_USD: 14500.0
+Harga_Minyak_ICP: 120.0
+SBN_10Y: 6.5
+Lifting_Minyak: 620.0
+Lifting_Gas: 1050.0
+IHSG: 7800.0
+BI_Rate: 6.0
+Harga_Batubara: 220.0
+Harga_CPO: 1100.0
+Ekspor_Growth: 9.5
+Impor_Growth: 6.5
+Konsumsi_RT_Growth: 5.5
+PMI_Manufaktur: 53.5
+
+## Moderate Baseline Scenario
+Inflasi: 3.0
+Pertumbuhan_Ekonomi: 5.0
+Kurs_USD: 15000.0
+Harga_Minyak_ICP: 80.0
+SBN_10Y: 6.6
+Lifting_Minyak: 605.0
+Lifting_Gas: 1005.0
+IHSG: 7300.0
+BI_Rate: 6.25
+Harga_Batubara: 145.0
+Harga_CPO: 820.0
+Ekspor_Growth: 5.0
+Impor_Growth: 4.0
+Konsumsi_RT_Growth: 4.9
+PMI_Manufaktur: 51.0
+
+## Stagflation Scenario
+Inflasi: 7.0
+Pertumbuhan_Ekonomi: 3.0
+Kurs_USD: 16500.0
+Harga_Minyak_ICP: 110.0
+SBN_10Y: 7.8
+Lifting_Minyak: 580.0
+Lifting_Gas: 980.0
+IHSG: 6200.0
+BI_Rate: 7.0
+Harga_Batubara: 160.0
+Harga_CPO: 900.0
+Ekspor_Growth: 3.5
+Impor_Growth: 2.0
+Konsumsi_RT_Growth: 3.2
+PMI_Manufaktur: 48.5
