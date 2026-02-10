@@ -587,7 +587,7 @@ class TaxForecaster:
         training_start = datetime.now()
         
         print(f"\n{'='*60}")
-        print(f"🚀 TRAINING STARTED: {training_start.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"TRAINING STARTED: {training_start.strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'='*60}\n")
         
         # Apply Seasonality Features
@@ -620,11 +620,23 @@ class TaxForecaster:
                     progress_pct=tax_progress
                 )
             
-            print(f"\n[{tax_idx}/{total_tax_types}] 🎯 Training: {tax}")
+            print(f"\n[{tax_idx}/{total_tax_types}] Training: {tax}")
             print(f"{'-'*50}")
             
             tax_data = self.df[self.df['Jenis Pajak'] == tax].copy().sort_values('Tanggal')
             tax_data.set_index('Tanggal', inplace=True)
+            # Check for sufficient data
+            if len(tax_data) < 12:
+                print(f"[WARNING] Insufficient data for {tax} ({len(tax_data)} rows). Skipping complex ML models.")
+                series = tax_data['Nominal (Milyar)']
+                # Just fit simple models or skip entirely?
+                # We'll skip the ML part but let simple models try if they can handle it (Prophet needs 2 points, Arima needs stationarity)
+                # But ML part explicitly does train/test split on -12.
+                # So we must avoid ML part if len < 12.
+                skip_ml = True
+            else:
+                skip_ml = False
+                
             series = tax_data['Nominal (Milyar)']
             
             # Get all available macro columns dynamically
@@ -703,99 +715,108 @@ class TaxForecaster:
             except: pass
 
             # ML Setup
-            ml_df = self._create_ml_features(series)
-            X = ml_df.drop('y', axis=1)
-            y = ml_df['y']
+            if not skip_ml:
+                ml_df = self._create_ml_features(series)
+                if len(ml_df) < 5: # Extra safety check
+                     print(f"[WARNING] Not enough data after feature engineering for {tax}. Skipping ML.")
+                else:
+                    X = ml_df.drop('y', axis=1)
+                    y = ml_df['y']
+                    
+                    # Scaler
+                    scaler = StandardScaler()
+                    X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
+                    
+                    split_idx = len(X) - 12
+                    
+                    # Safety check for split_idx
+                    if split_idx < 1:
+                        print(f"[WARNING] Train/Test split failed for {tax}. Skipping ML.")
+                    else:
+                        X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
+                        y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
+                        
+                        X_train_s, X_test_s = X_scaled.iloc[:split_idx], X_scaled.iloc[split_idx:]
+        
+                        # 6. XGBoost
+                        if XGBOOST_AVAILABLE:
+                            try:
+                                best_params = self.tune_hyperparameters("XGBoost", X_train, y_train, X_test, y_test)
+                                xgb = XGBRegressor(**best_params) if best_params else XGBRegressor(n_estimators=100)
+                                xgb.fit(X_train, y_train)
+                                pred = xgb.predict(X_test)
+                                full_xgb = XGBRegressor(**best_params) if best_params else XGBRegressor(n_estimators=100)
+                                full_xgb.fit(X, y)
+                                add_candidate('XGBoost', full_xgb, pred, X, None) 
+                            except: pass
+                        
+                        # 7. LightGBM
+                        if LIGHTGBM_AVAILABLE:
+                            try:
+                                best_params = self.tune_hyperparameters("LightGBM", X_train, y_train, X_test, y_test)
+                                lgb = LGBMRegressor(**best_params, verbose=-1) if best_params else LGBMRegressor(verbose=-1)
+                                lgb.fit(X_train, y_train)
+                                pred = lgb.predict(X_test)
+                                full_lgb = LGBMRegressor(**best_params, verbose=-1) if best_params else LGBMRegressor(verbose=-1)
+                                full_lgb.fit(X, y)
+                                add_candidate('LightGBM', full_lgb, pred, X, None)
+                            except: pass
+                        
+                        # 8. CatBoost
+                        if CATBOOST_AVAILABLE:
+                            try:
+                                best_params = self.tune_hyperparameters("CatBoost", X_train, y_train, X_test, y_test)
+                                cat = CatBoostRegressor(**best_params, verbose=0) if best_params else CatBoostRegressor(verbose=0)
+                                cat.fit(X_train, y_train)
+                                pred = cat.predict(X_test)
+                                full_cat = CatBoostRegressor(**best_params, verbose=0) if best_params else CatBoostRegressor(verbose=0)
+                                full_cat.fit(X, y)
+                                add_candidate('CatBoost', full_cat, pred, X, None)
+                            except: pass
             
-            # Scaler
-            scaler = StandardScaler()
-            X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
+                        # 9. Random Forest
+                        try:
+                            best_params = self.tune_hyperparameters("RandomForest", X_train, y_train, X_test, y_test)
+                            rf = RandomForestRegressor(**best_params) if best_params else RandomForestRegressor(n_estimators=100)
+                            rf.fit(X_train, y_train)
+                            pred = rf.predict(X_test)
+                            full_rf = RandomForestRegressor(**best_params) if best_params else RandomForestRegressor(n_estimators=100)
+                            full_rf.fit(X, y)
+                            add_candidate('Random Forest', full_rf, pred, X, None)
+                        except: pass
             
-            split_idx = len(X) - 12
-            X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
-            y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
+                        # 10. Gradient Boosting
+                        try:
+                            best_params = self.tune_hyperparameters("GradientBoosting", X_train, y_train, X_test, y_test)
+                            gb = GradientBoostingRegressor(**best_params) if best_params else GradientBoostingRegressor(n_estimators=100)
+                            gb.fit(X_train, y_train)
+                            pred = gb.predict(X_test)
+                            full_gb = GradientBoostingRegressor(**best_params) if best_params else GradientBoostingRegressor(n_estimators=100)
+                            full_gb.fit(X, y)
+                            add_candidate('Gradient Boosting', full_gb, pred, X, None)
+                        except: pass
             
-            X_train_s, X_test_s = X_scaled.iloc[:split_idx], X_scaled.iloc[split_idx:]
-
-            # 6. XGBoost
-            if XGBOOST_AVAILABLE:
-                try:
-                    best_params = self.tune_hyperparameters("XGBoost", X_train, y_train, X_test, y_test)
-                    xgb = XGBRegressor(**best_params) if best_params else XGBRegressor(n_estimators=100)
-                    xgb.fit(X_train, y_train)
-                    pred = xgb.predict(X_test)
-                    full_xgb = XGBRegressor(**best_params) if best_params else XGBRegressor(n_estimators=100)
-                    full_xgb.fit(X, y)
-                    add_candidate('XGBoost', full_xgb, pred, X, None) 
-                except: pass
+                        # 11. Extra Trees
+                        try:
+                            best_params = self.tune_hyperparameters("ExtraTrees", X_train, y_train, X_test, y_test)
+                            et = ExtraTreesRegressor(**best_params) if best_params else ExtraTreesRegressor(n_estimators=100)
+                            et.fit(X_train, y_train)
+                            pred = et.predict(X_test)
+                            full_et = ExtraTreesRegressor(**best_params) if best_params else ExtraTreesRegressor(n_estimators=100)
+                            full_et.fit(X, y)
+                            add_candidate('Extra Trees', full_et, pred, X, None)
+                        except: pass
             
-            # 7. LightGBM
-            if LIGHTGBM_AVAILABLE:
-                try:
-                    best_params = self.tune_hyperparameters("LightGBM", X_train, y_train, X_test, y_test)
-                    lgb = LGBMRegressor(**best_params, verbose=-1) if best_params else LGBMRegressor(verbose=-1)
-                    lgb.fit(X_train, y_train)
-                    pred = lgb.predict(X_test)
-                    full_lgb = LGBMRegressor(**best_params, verbose=-1) if best_params else LGBMRegressor(verbose=-1)
-                    full_lgb.fit(X, y)
-                    add_candidate('LightGBM', full_lgb, pred, X, None)
-                except: pass
-            
-            # 8. CatBoost
-            if CATBOOST_AVAILABLE:
-                try:
-                    best_params = self.tune_hyperparameters("CatBoost", X_train, y_train, X_test, y_test)
-                    cat = CatBoostRegressor(**best_params, verbose=0) if best_params else CatBoostRegressor(verbose=0)
-                    cat.fit(X_train, y_train)
-                    pred = cat.predict(X_test)
-                    full_cat = CatBoostRegressor(**best_params, verbose=0) if best_params else CatBoostRegressor(verbose=0)
-                    full_cat.fit(X, y)
-                    add_candidate('CatBoost', full_cat, pred, X, None)
-                except: pass
-
-            # 9. Random Forest
-            try:
-                best_params = self.tune_hyperparameters("RandomForest", X_train, y_train, X_test, y_test)
-                rf = RandomForestRegressor(**best_params) if best_params else RandomForestRegressor(n_estimators=100)
-                rf.fit(X_train, y_train)
-                pred = rf.predict(X_test)
-                full_rf = RandomForestRegressor(**best_params) if best_params else RandomForestRegressor(n_estimators=100)
-                full_rf.fit(X, y)
-                add_candidate('Random Forest', full_rf, pred, X, None)
-            except: pass
-
-            # 10. Gradient Boosting
-            try:
-                best_params = self.tune_hyperparameters("GradientBoosting", X_train, y_train, X_test, y_test)
-                gb = GradientBoostingRegressor(**best_params) if best_params else GradientBoostingRegressor(n_estimators=100)
-                gb.fit(X_train, y_train)
-                pred = gb.predict(X_test)
-                full_gb = GradientBoostingRegressor(**best_params) if best_params else GradientBoostingRegressor(n_estimators=100)
-                full_gb.fit(X, y)
-                add_candidate('Gradient Boosting', full_gb, pred, X, None)
-            except: pass
-
-            # 11. Extra Trees
-            try:
-                best_params = self.tune_hyperparameters("ExtraTrees", X_train, y_train, X_test, y_test)
-                et = ExtraTreesRegressor(**best_params) if best_params else ExtraTreesRegressor(n_estimators=100)
-                et.fit(X_train, y_train)
-                pred = et.predict(X_test)
-                full_et = ExtraTreesRegressor(**best_params) if best_params else ExtraTreesRegressor(n_estimators=100)
-                full_et.fit(X, y)
-                add_candidate('Extra Trees', full_et, pred, X, None)
-            except: pass
-
-            # 12. AdaBoost
-            try:
-                best_params = self.tune_hyperparameters("AdaBoost", X_train, y_train, X_test, y_test)
-                ada = AdaBoostRegressor(**best_params) if best_params else AdaBoostRegressor(n_estimators=100)
-                ada.fit(X_train, y_train)
-                pred = ada.predict(X_test)
-                full_ada = AdaBoostRegressor(**best_params) if best_params else AdaBoostRegressor(n_estimators=100)
-                full_ada.fit(X, y)
-                add_candidate('AdaBoost', full_ada, pred, X, None)
-            except: pass
+                        # 12. AdaBoost
+                        try:
+                            best_params = self.tune_hyperparameters("AdaBoost", X_train, y_train, X_test, y_test)
+                            ada = AdaBoostRegressor(**best_params) if best_params else AdaBoostRegressor(n_estimators=100)
+                            ada.fit(X_train, y_train)
+                            pred = ada.predict(X_test)
+                            full_ada = AdaBoostRegressor(**best_params) if best_params else AdaBoostRegressor(n_estimators=100)
+                            full_ada.fit(X, y)
+                            add_candidate('AdaBoost', full_ada, pred, X, None)
+                        except: pass
 
             # 13. KNN
             try:
